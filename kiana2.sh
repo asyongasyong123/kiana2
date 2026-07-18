@@ -3,9 +3,10 @@ set -euo pipefail
 
 # =========================================
 # KIANA-STYLE | TROJAN + VLESS WS/TLS ONLY
-# ✅ FIXED CREDENTIALS HARDCODED
+# ✅ FIXED CREDENTIALS:
 # Trojan Pass: kiana-2
 # VLESS UUID: a1b2c3d4-5678-40ef-98ab-cdef01234567
+# ✅ FULL LINK DISPLAY FOR EASY COPY
 # PEAK PERFORMANCE | NO TIMEOUT | SUPER STABLE
 # =========================================
 
@@ -108,12 +109,6 @@ while true; do
     MAX_INST=${MAX_INST:-1}
     [[ "$MAX_INST" =~ ^[1-4]$ ]] && break || echo -e "${RED}Only 1-4 allowed${NC}"
 done
-
-# ========================================
-# ✅ HARDCODED FIXED CREDENTIALS
-# ========================================
-TROJAN_PASS="kiana-2"
-VLESS_UUID="a1b2c3d4-5678-40ef-98ab-cdef01234567"
 
 cd "$BUILD_DIR" || exit 1
 
@@ -354,13 +349,16 @@ CLOUD_RUN_URL=$(gcloud run services describe $CLOUD_RUN_SERVICE_NAME --project="
 DOMAIN=$(echo "$CLOUD_RUN_URL" | sed 's|https://||')
 
 # =========================
-# FINAL OUTPUT
+# FINAL OUTPUT - FULL LINK FOR EASY COPY
 # =========================
 echo -e "\n${CYAN}=========================================${NC}"
 echo -e "${GREEN}✅ DEPLOYMENT SUCCESS! PEAK PERFORMANCE ACTIVE${NC}"
 echo -e "${CYAN}=========================================${NC}"
 echo -e "${GREEN}Service:${NC} $CLOUD_RUN_SERVICE_NAME"
-echo -e "${GREEN}URL/Domain:${NC} $DOMAIN"
+echo -e "${GREEN}🔗 FULL WORKING LINK (I-copy o i-paste sa browser):${NC}"
+echo -e "https://$DOMAIN"
+echo -e "${GREEN}🌐 DOMAIN ADDRESS:${NC}"
+echo "$DOMAIN"
 echo -e "${GREEN}Port:${NC} 443"
 echo -e "\n${YELLOW}--- FIXED CLIENT CONFIGS ---${NC}"
 echo -e "${GREEN}🔹 TROJAN + WS + TLS${NC}"
@@ -376,3 +374,4 @@ echo "   UUID: a1b2c3d4-5678-40ef-98ab-cdef01234567"
 echo "   Path: /vl-ws"
 echo "   Security: TLS | SNI: $DOMAIN"
 echo -e "${CYAN}=========================================${NC}"
+echo -e "${YELLOW}💡 TIP: I-highlight ug long press ang link para dali ra ma-copy${NC}"
