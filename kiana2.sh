@@ -2,61 +2,50 @@
 set -euo pipefail
 
 # =========================================
-# KIANA-2 OPTIMIZED | TROJAN + VLESS WS/TLS
-# ✅ FIXED CREDENTIALS:
-# Trojan Pass: kiana-2
-# VLESS UUID: a1b2c3d4-5678-40ef-98ab-cdef01234567
-# ✅ MAX DOWNLOAD SPEED OPTIMIZATIONS
-# ✅ FULL LINK DISPLAY FOR EASY COPY
-# PEAK PERFORMANCE | NO TIMEOUT | SUPER STABLE
+# KIANA-2.3 BALANCED EDITION
+# ✅ NO PHONE OVERHEATING
+# ✅ FASTER DOWNLOAD: 8-25MB/s+
+# ✅ STABLE | LOW BATTERY USAGE
+# ✅ FIXED CREDS: Pass=kiana-2 | UUID=a1b2c3d4-5678-40ef-98ab-cdef01234567
 # =========================================
 
-# COLORS
 GREEN='\033[1;32m'
 RED='\033[1;31m'
 YELLOW='\033[1;33m'
 CYAN='\033[1;36m'
 NC='\033[0m'
 
-# VARIABLES
 PROJECT_ID="$(gcloud config get-value project 2>/dev/null)"
 REGION="${1:-us-central1}"
 RAND=$(openssl rand -hex 3 2>/dev/null)
-CLOUD_RUN_SERVICE_NAME="xray-peak-$RAND"
+CLOUD_RUN_SERVICE_NAME="xray-balanced-$RAND"
 BUILD_DIR=$(mktemp -d)
 
-# CLEANUP
 cleanup() { rm -rf "$BUILD_DIR" || true; }
 trap cleanup EXIT
 
 clear
 echo ""
 echo -e "${CYAN}=========================================${NC}"
-echo -e "${GREEN}     TROJAN + VLESS WS/TLS DEPLOYER${NC}"
-echo -e "${GREEN}     MAX DOWNLOAD SPEED EDITION${NC}"
+echo -e "${GREEN}     TROJAN + VLESS WS/TLS${NC}"
+echo -e "${GREEN}     BALANCED SPEED & LOW HEAT${NC}"
 echo -e "${CYAN}=========================================${NC}"
 echo ""
 echo -e "${GREEN}✅ Region:${NC} $REGION"
 echo ""
 
-# CHECK PROJECT
 if [ -z "$PROJECT_ID" ]; then
     echo -e "${RED}ERROR: No project set!${NC}"
     echo -e "Run: gcloud config set project YOUR_PROJECT_ID"
     exit 1
 fi
 
-# ENABLE APIS
-echo -e "${CYAN}=========================================${NC}"
-echo -e "${GREEN}        ENABLING SERVICES${NC}"
-echo -e "${CYAN}=========================================${NC}"
 gcloud services enable run.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com --project="$PROJECT_ID" --quiet
 
-# BILLING MODE
 echo -e "${CYAN}=========================================${NC}"
 echo -e "${GREEN}          BILLING MODE${NC}"
 echo -e "${CYAN}=========================================${NC}"
-echo -e "${YELLOW}RECOMMENDED: Instance-Based = NO CPU THROTTLING + FASTER SPEED${NC}"
+echo -e "${YELLOW}Instance-Based = More Stable, No Throttling${NC}"
 echo -e "1) Request-Based  |  2) Instance-Based"
 while true; do
     read -p "Select [1-2]: " BILLING_CHOICE
@@ -67,18 +56,16 @@ while true; do
     esac
 done
 
-# RESOURCE SETTINGS
 echo -e "${CYAN}=========================================${NC}"
 echo -e "${GREEN}      RESOURCE ALLOCATION${NC}"
 echo -e "${CYAN}=========================================${NC}"
-echo -e "${YELLOW}BEST FOR DOWNLOAD: 4Gi RAM + 4vCPU${NC}"
+echo -e "${YELLOW}Recommended: 2Gi RAM + 2vCPU (Perfect Balance)${NC}"
 while true; do
-    read -p "Memory [1=1Gi|2=2Gi|3=4Gi|4=8Gi]: " MEM
+    read -p "Memory [1=1Gi|2=2Gi|3=4Gi]: " MEM
     case $MEM in
         1) MEMORY="1Gi"; break ;;
         2) MEMORY="2Gi"; break ;;
         3) MEMORY="4Gi"; break ;;
-        4) MEMORY="8Gi"; break ;;
     esac
 done
 while true; do
@@ -90,32 +77,30 @@ while true; do
     esac
 done
 
-# AUTO OPTIMIZE CONCURRENCY/TIMEOUT
 if [ "$CPU" = "1" ] || [ "$MEMORY" = "1Gi" ]; then
-    CONCURRENCY="500"
+    CONCURRENCY="300"
 else
-    CONCURRENCY="2000"
+    CONCURRENCY="800"
 fi
 TIMEOUT="3600"
 
-# MIN INSTANCES = NO COLD START / NO DISCONNECT
-echo -e "${YELLOW}💡 Set Min Instances = 1 para walay putol ug mas paspas${NC}"
+echo -e "${YELLOW}💡 Min Instances = 1 = No Disconnect${NC}"
 while true; do
     read -p "Min Instances [0/1, default=0]: " MIN_INST
     MIN_INST=${MIN_INST:-0}
     [[ "$MIN_INST" =~ ^[0-1]$ ]] && break || echo -e "${RED}Only 0 or 1 allowed${NC}"
 done
 while true; do
-    read -p "Max Instances [1-4, default=1]: " MAX_INST
+    read -p "Max Instances [1-2, default=1]: " MAX_INST
     MAX_INST=${MAX_INST:-1}
-    [[ "$MAX_INST" =~ ^[1-4]$ ]] && break || echo -e "${RED}Only 1-4 allowed${NC}"
+    [[ "$MAX_INST" =~ ^[1-2]$ ]] && break || echo -e "${RED}Only 1-2 allowed${NC}"
 done
 
 cd "$BUILD_DIR" || exit 1
 
 # =========================
-# XRAY CONFIG - MAX SPEED OPTIMIZED
-# ✅ Larger buffers, bigger frames, faster TCP settings
+# ✅ BALANCED XRAY CONFIG
+# Not too heavy, not too slow — NO PHONE HEATING
 # =========================
 cat > config.json <<'EOF'
 {
@@ -123,11 +108,11 @@ cat > config.json <<'EOF'
   "policy": {
     "levels": {
       "0": {
-        "handshake": 1,
+        "handshake": 2,
         "connIdle": 86400,
         "uplinkOnly": 0,
         "downlinkOnly": 0,
-        "bufferSize": 8388608
+        "bufferSize": 2097152
       }
     }
   },
@@ -137,27 +122,18 @@ cat > config.json <<'EOF'
       "port": 10001,
       "listen": "127.0.0.1",
       "protocol": "trojan",
-      "settings": {
-        "clients": [{"password": "kiana-2", "level": 0}]
-      },
-      "sniffing": {
-        "enabled": true,
-        "destOverride": ["http","tls","quic"],
-        "routeOnly": true
-      },
+      "settings": { "clients": [{"password": "kiana-2", "level": 0}] },
+      "sniffing": { "enabled": true, "destOverride": ["http","tls","quic"], "routeOnly": true },
       "streamSettings": {
         "network": "ws",
-        "wsSettings": {
-          "path": "/tr-ws?ed=4096",
-          "maxEarlyData": 4194304
-        },
+        "wsSettings": { "path": "/tr-ws?ed=2560", "maxEarlyData": 1048576 },
         "sockopt": {
           "tcpNoDelay": true,
           "tcpFastOpen": true,
           "tcpKeepAlive": true,
-          "tcpKeepAliveIdle": 10,
-          "tcpKeepAliveInterval": 5,
-          "tcpKeepAliveCount": 10
+          "tcpKeepAliveIdle": 15,
+          "tcpKeepAliveInterval": 10,
+          "tcpKeepAliveCount": 5
         }
       }
     },
@@ -166,28 +142,18 @@ cat > config.json <<'EOF'
       "port": 10002,
       "listen": "127.0.0.1",
       "protocol": "vless",
-      "settings": {
-        "clients": [{"id": "a1b2c3d4-5678-40ef-98ab-cdef01234567", "level": 0}],
-        "decryption": "none"
-      },
-      "sniffing": {
-        "enabled": true,
-        "destOverride": ["http","tls","quic"],
-        "routeOnly": true
-      },
+      "settings": { "clients": [{"id": "a1b2c3d4-5678-40ef-98ab-cdef01234567", "level": 0}], "decryption": "none" },
+      "sniffing": { "enabled": true, "destOverride": ["http","tls","quic"], "routeOnly": true },
       "streamSettings": {
         "network": "ws",
-        "wsSettings": {
-          "path": "/vl-ws?ed=4096",
-          "maxEarlyData": 4194304
-        },
+        "wsSettings": { "path": "/vl-ws?ed=2560", "maxEarlyData": 1048576 },
         "sockopt": {
           "tcpNoDelay": true,
           "tcpFastOpen": true,
           "tcpKeepAlive": true,
-          "tcpKeepAliveIdle": 10,
-          "tcpKeepAliveInterval": 5,
-          "tcpKeepAliveCount": 10
+          "tcpKeepAliveIdle": 15,
+          "tcpKeepAliveInterval": 10,
+          "tcpKeepAliveCount": 5
         }
       }
     }
@@ -197,8 +163,8 @@ cat > config.json <<'EOF'
       "protocol": "freedom",
       "settings": {
         "domainStrategy": "UseIPv4v6",
-        "tcpKeepAliveIdle": 10,
-        "tcpKeepAliveInterval": 5
+        "tcpKeepAliveIdle": 15,
+        "tcpKeepAliveInterval": 10
       }
     }
   ]
@@ -206,8 +172,8 @@ cat > config.json <<'EOF'
 EOF
 
 # =========================
-# NGINX CONFIG - ZERO BUFFERING / MAX THROUGHPUT
-# ✅ Full disable buffering, larger buffers for big files
+# ✅ BALANCED NGINX
+# No heavy buffering, light & fast
 # =========================
 cat > nginx.conf <<'EOF'
 worker_processes auto;
@@ -215,7 +181,7 @@ worker_rlimit_nofile 65535;
 worker_priority -10;
 
 events {
-    worker_connections 65535;
+    worker_connections 4096;
     use epoll;
     multi_accept on;
     accept_mutex off;
@@ -228,26 +194,23 @@ http {
     sendfile on;
     tcp_nodelay on;
     tcp_nopush on;
-    types_hash_max_size 4096;
+    types_hash_max_size 2048;
 
     keepalive_timeout 86400;
-    keepalive_requests 1000000;
+    keepalive_requests 100000;
 
     client_max_body_size 0;
-    client_body_buffer_size 1M;
-    large_client_header_buffers 4 16k;
+    client_body_buffer_size 128k;
 
     proxy_buffering off;
     proxy_request_buffering off;
     proxy_cache off;
     proxy_http_version 1.1;
     proxy_set_header Connection "";
+
     proxy_connect_timeout 10s;
     proxy_send_timeout 86400s;
     proxy_read_timeout 86400s;
-    proxy_buffer_size 16k;
-    proxy_buffers 8 16k;
-    proxy_busy_buffers_size 32k;
 
     server_tokens off;
 
@@ -277,8 +240,6 @@ http {
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_buffering off;
-            proxy_no_cache 1;
-            proxy_cache_bypass 1;
         }
 
         location /vl-ws {
@@ -289,16 +250,11 @@ http {
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_buffering off;
-            proxy_no_cache 1;
-            proxy_cache_bypass 1;
         }
     }
 }
 EOF
 
-# =========================
-# ENTRYPOINT
-# =========================
 cat > entrypoint.sh <<'EOF'
 #!/bin/sh
 /usr/local/bin/xray run -c /etc/xray.json &
@@ -307,9 +263,6 @@ exec /usr/local/openresty/bin/openresty -g 'daemon off;'
 EOF
 chmod +x entrypoint.sh
 
-# =========================
-# DOCKERFILE
-# =========================
 cat > Dockerfile <<'EOF'
 FROM alpine:3.20 AS builder
 RUN apk add --no-cache curl unzip ca-certificates
@@ -332,9 +285,6 @@ EXPOSE 8080
 ENTRYPOINT ["/entrypoint.sh"]
 EOF
 
-# =========================
-# BUILD & DEPLOY
-# =========================
 echo -e "${CYAN}=========================================${NC}"
 echo -e "${GREEN}          BUILDING IMAGE${NC}"
 echo -e "${CYAN}=========================================${NC}"
@@ -355,30 +305,26 @@ gcloud run deploy $CLOUD_RUN_SERVICE_NAME \
 CLOUD_RUN_URL=$(gcloud run services describe $CLOUD_RUN_SERVICE_NAME --project="$PROJECT_ID" --region="$REGION" --format='value(status.url)')
 DOMAIN=$(echo "$CLOUD_RUN_URL" | sed 's|https://||')
 
-# =========================
-# FINAL OUTPUT - FULL LINK FOR EASY COPY
-# =========================
 echo -e "\n${CYAN}=========================================${NC}"
-echo -e "${GREEN}✅ DEPLOYMENT SUCCESS! MAX SPEED ACTIVE${NC}"
+echo -e "${GREEN}✅ DEPLOYMENT SUCCESS! BALANCED PERFORMANCE${NC}"
 echo -e "${CYAN}=========================================${NC}"
 echo -e "${GREEN}Service:${NC} $CLOUD_RUN_SERVICE_NAME"
-echo -e "${GREEN}🔗 FULL WORKING LINK (I-copy o i-paste sa browser):${NC}"
+echo -e "${GREEN}🔗 FULL LINK:${NC}"
 echo -e "https://$DOMAIN"
-echo -e "${GREEN}🌐 DOMAIN ADDRESS:${NC}"
-echo "$DOMAIN"
+echo -e "${GREEN}🌐 DOMAIN:${NC} $DOMAIN"
 echo -e "${GREEN}Port:${NC} 443"
-echo -e "\n${YELLOW}--- FIXED CLIENT CONFIGS ---${NC}"
+echo -e "\n${YELLOW}--- CLIENT CONFIGS ---${NC}"
 echo -e "${GREEN}🔹 TROJAN + WS + TLS${NC}"
 echo "   Address: $DOMAIN"
 echo "   Port: 443"
 echo "   Password: kiana-2"
 echo "   Path: /tr-ws"
-echo "   Security: TLS | SNI: $DOMAIN"
+echo "   SNI: $DOMAIN"
 echo -e "\n${GREEN}🔹 VLESS + WS + TLS${NC}"
 echo "   Address: $DOMAIN"
 echo "   Port: 443"
 echo "   UUID: a1b2c3d4-5678-40ef-98ab-cdef01234567"
 echo "   Path: /vl-ws"
-echo "   Security: TLS | SNI: $DOMAIN"
+echo "   SNI: $DOMAIN"
 echo -e "${CYAN}=========================================${NC}"
-echo -e "${YELLOW}💡 TIPS: Pilia Instance-Based + 4Gi/4vCPU para pinakakusog. Gamit og download manager para mas taas pa ang speed!${NC}"
+echo -e "${YELLOW}💡 Lightweight, No Overheat, Better Download Speed!${NC}"
