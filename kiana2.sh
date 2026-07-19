@@ -2,10 +2,11 @@
 set -euo pipefail
 
 # =========================================
-# KIANA-STYLE | TROJAN + VLESS WS/TLS ONLY
+# KIANA-2 OPTIMIZED | TROJAN + VLESS WS/TLS
 # ✅ FIXED CREDENTIALS:
 # Trojan Pass: kiana-2
 # VLESS UUID: a1b2c3d4-5678-40ef-98ab-cdef01234567
+# ✅ MAX DOWNLOAD SPEED OPTIMIZATIONS
 # ✅ FULL LINK DISPLAY FOR EASY COPY
 # PEAK PERFORMANCE | NO TIMEOUT | SUPER STABLE
 # =========================================
@@ -32,7 +33,7 @@ clear
 echo ""
 echo -e "${CYAN}=========================================${NC}"
 echo -e "${GREEN}     TROJAN + VLESS WS/TLS DEPLOYER${NC}"
-echo -e "${GREEN}     MAX PERFORMANCE EDITION${NC}"
+echo -e "${GREEN}     MAX DOWNLOAD SPEED EDITION${NC}"
 echo -e "${CYAN}=========================================${NC}"
 echo ""
 echo -e "${GREEN}✅ Region:${NC} $REGION"
@@ -55,7 +56,7 @@ gcloud services enable run.googleapis.com cloudbuild.googleapis.com artifactregi
 echo -e "${CYAN}=========================================${NC}"
 echo -e "${GREEN}          BILLING MODE${NC}"
 echo -e "${CYAN}=========================================${NC}"
-echo -e "${YELLOW}RECOMMENDED: Instance-Based = NO CPU THROTTLING${NC}"
+echo -e "${YELLOW}RECOMMENDED: Instance-Based = NO CPU THROTTLING + FASTER SPEED${NC}"
 echo -e "1) Request-Based  |  2) Instance-Based"
 while true; do
     read -p "Select [1-2]: " BILLING_CHOICE
@@ -70,7 +71,7 @@ done
 echo -e "${CYAN}=========================================${NC}"
 echo -e "${GREEN}      RESOURCE ALLOCATION${NC}"
 echo -e "${CYAN}=========================================${NC}"
-echo -e "${YELLOW}Best Performance: 4Gi RAM + 4vCPU${NC}"
+echo -e "${YELLOW}BEST FOR DOWNLOAD: 4Gi RAM + 4vCPU${NC}"
 while true; do
     read -p "Memory [1=1Gi|2=2Gi|3=4Gi|4=8Gi]: " MEM
     case $MEM in
@@ -91,14 +92,14 @@ done
 
 # AUTO OPTIMIZE CONCURRENCY/TIMEOUT
 if [ "$CPU" = "1" ] || [ "$MEMORY" = "1Gi" ]; then
-    CONCURRENCY="200"
+    CONCURRENCY="500"
 else
-    CONCURRENCY="1000"
+    CONCURRENCY="2000"
 fi
 TIMEOUT="3600"
 
 # MIN INSTANCES = NO COLD START / NO DISCONNECT
-echo -e "${YELLOW}💡 Set Min Instances = 1 para walay putol kung idle${NC}"
+echo -e "${YELLOW}💡 Set Min Instances = 1 para walay putol ug mas paspas${NC}"
 while true; do
     read -p "Min Instances [0/1, default=0]: " MIN_INST
     MIN_INST=${MIN_INST:-0}
@@ -113,7 +114,8 @@ done
 cd "$BUILD_DIR" || exit 1
 
 # =========================
-# XRAY CONFIG - FIXED CREDS + PEAK OPTIMIZED
+# XRAY CONFIG - MAX SPEED OPTIMIZED
+# ✅ Larger buffers, bigger frames, faster TCP settings
 # =========================
 cat > config.json <<'EOF'
 {
@@ -125,7 +127,7 @@ cat > config.json <<'EOF'
         "connIdle": 86400,
         "uplinkOnly": 0,
         "downlinkOnly": 0,
-        "bufferSize": 2097152
+        "bufferSize": 8388608
       }
     }
   },
@@ -146,16 +148,16 @@ cat > config.json <<'EOF'
       "streamSettings": {
         "network": "ws",
         "wsSettings": {
-          "path": "/tr-ws?ed=2560",
-          "maxEarlyData": 1048576
+          "path": "/tr-ws?ed=4096",
+          "maxEarlyData": 4194304
         },
         "sockopt": {
           "tcpNoDelay": true,
           "tcpFastOpen": true,
           "tcpKeepAlive": true,
-          "tcpKeepAliveIdle": 15,
-          "tcpKeepAliveInterval": 10,
-          "tcpKeepAliveCount": 5
+          "tcpKeepAliveIdle": 10,
+          "tcpKeepAliveInterval": 5,
+          "tcpKeepAliveCount": 10
         }
       }
     },
@@ -176,16 +178,16 @@ cat > config.json <<'EOF'
       "streamSettings": {
         "network": "ws",
         "wsSettings": {
-          "path": "/vl-ws?ed=2560",
-          "maxEarlyData": 1048576
+          "path": "/vl-ws?ed=4096",
+          "maxEarlyData": 4194304
         },
         "sockopt": {
           "tcpNoDelay": true,
           "tcpFastOpen": true,
           "tcpKeepAlive": true,
-          "tcpKeepAliveIdle": 15,
-          "tcpKeepAliveInterval": 10,
-          "tcpKeepAliveCount": 5
+          "tcpKeepAliveIdle": 10,
+          "tcpKeepAliveInterval": 5,
+          "tcpKeepAliveCount": 10
         }
       }
     }
@@ -195,8 +197,8 @@ cat > config.json <<'EOF'
       "protocol": "freedom",
       "settings": {
         "domainStrategy": "UseIPv4v6",
-        "tcpKeepAliveIdle": 15,
-        "tcpKeepAliveInterval": 10
+        "tcpKeepAliveIdle": 10,
+        "tcpKeepAliveInterval": 5
       }
     }
   ]
@@ -204,7 +206,8 @@ cat > config.json <<'EOF'
 EOF
 
 # =========================
-# NGINX CONFIG - ZERO TIMEOUT / MAX SPEED
+# NGINX CONFIG - ZERO BUFFERING / MAX THROUGHPUT
+# ✅ Full disable buffering, larger buffers for big files
 # =========================
 cat > nginx.conf <<'EOF'
 worker_processes auto;
@@ -231,22 +234,22 @@ http {
     keepalive_requests 1000000;
 
     client_max_body_size 0;
-    client_body_buffer_size 128k;
+    client_body_buffer_size 1M;
+    large_client_header_buffers 4 16k;
 
     proxy_buffering off;
     proxy_request_buffering off;
     proxy_cache off;
     proxy_http_version 1.1;
     proxy_set_header Connection "";
-
     proxy_connect_timeout 10s;
     proxy_send_timeout 86400s;
     proxy_read_timeout 86400s;
+    proxy_buffer_size 16k;
+    proxy_buffers 8 16k;
+    proxy_busy_buffers_size 32k;
 
     server_tokens off;
-    gzip on;
-    gzip_comp_level 4;
-    gzip_min_length 256;
 
     map $http_upgrade $connection_upgrade {
         default upgrade;
@@ -274,6 +277,8 @@ http {
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_buffering off;
+            proxy_no_cache 1;
+            proxy_cache_bypass 1;
         }
 
         location /vl-ws {
@@ -284,6 +289,8 @@ http {
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_buffering off;
+            proxy_no_cache 1;
+            proxy_cache_bypass 1;
         }
     }
 }
@@ -352,7 +359,7 @@ DOMAIN=$(echo "$CLOUD_RUN_URL" | sed 's|https://||')
 # FINAL OUTPUT - FULL LINK FOR EASY COPY
 # =========================
 echo -e "\n${CYAN}=========================================${NC}"
-echo -e "${GREEN}✅ DEPLOYMENT SUCCESS! PEAK PERFORMANCE ACTIVE${NC}"
+echo -e "${GREEN}✅ DEPLOYMENT SUCCESS! MAX SPEED ACTIVE${NC}"
 echo -e "${CYAN}=========================================${NC}"
 echo -e "${GREEN}Service:${NC} $CLOUD_RUN_SERVICE_NAME"
 echo -e "${GREEN}🔗 FULL WORKING LINK (I-copy o i-paste sa browser):${NC}"
@@ -374,4 +381,4 @@ echo "   UUID: a1b2c3d4-5678-40ef-98ab-cdef01234567"
 echo "   Path: /vl-ws"
 echo "   Security: TLS | SNI: $DOMAIN"
 echo -e "${CYAN}=========================================${NC}"
-echo -e "${YELLOW}💡 TIP: I-highlight ug long press ang link para dali ra ma-copy${NC}"
+echo -e "${YELLOW}💡 TIPS: Pilia Instance-Based + 4Gi/4vCPU para pinakakusog. Gamit og download manager para mas taas pa ang speed!${NC}"
