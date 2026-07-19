@@ -61,7 +61,7 @@ done
 echo -e "${CYAN}=========================================${NC}"
 echo -e "${GREEN}      RESOURCE ALLOCATION${NC}"
 echo -e "${CYAN}=========================================${NC}"
-echo -e "${YELLOW}Recommended: 2Gi RAM + 2vCPU (Perfect Balance)${NC}"
+echo -e "${YELLOW}Recommended: 2Gi RAM + 2vCPU (Perfect Balance) / 4Gi RAM + 4vCPU (PEAK PERFORMANCE)${NC}"
 while true; do
     read -p "Memory [1=1Gi|2=2Gi|3=4Gi]: " MEM
     case $MEM in
