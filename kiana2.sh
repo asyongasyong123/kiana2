@@ -5,6 +5,7 @@ set -euo pipefail
 # 🚀 KIANA-2.3 GCP DEPLOYER BALANCED EDITION
 # ✅ BALANCE XRAY
 # ✅ BALANCE NGINX
+# ✅ ADDED HEALTH CHECK ENDPOINT
 # ✅ NO PHONE OVERHEATING
 # ✅ SMOOTH STREAMING & FASTER DOWNLOAD: 8-25MB/s+
 # ✅ STABLE | LOW BATTERY USAGE
@@ -174,7 +175,7 @@ cat > config.json <<'EOF'
 EOF
 
 # =========================
-# ✅ BALANCED NGINX
+# ✅ BALANCED NGINX + ADDED HEALTH CHECK
 # No heavy buffering, light & fast
 # =========================
 cat > nginx.conf <<'EOF'
@@ -224,6 +225,12 @@ http {
     server {
         listen 8080 deferred reuseport;
         server_name _;
+
+        # ✅ ADDED HEALTH CHECK ENDPOINT
+        location /health {
+            return 200 "OK\n";
+            add_header Content-Type text/plain;
+        }
 
         location / {
             proxy_pass https://www.google.com;
@@ -313,6 +320,8 @@ echo -e "${CYAN}=========================================${NC}"
 echo -e "${GREEN}Service:${NC} $CLOUD_RUN_SERVICE_NAME"
 echo -e "${GREEN}🔗 FULL LINK:${NC}"
 echo -e "https://$DOMAIN"
+echo -e "${GREEN}💚 HEALTH CHECK:${NC}"
+echo -e "https://$DOMAIN/health"
 echo -e "${GREEN}🌐 DOMAIN:${NC} $DOMAIN"
 echo -e "${GREEN}Port:${NC} 443"
 echo -e "\n${YELLOW}--- CLIENT CONFIGS ---${NC}"
