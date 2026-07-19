@@ -3,8 +3,10 @@ set -euo pipefail
 
 # =========================================
 # KIANA-2.3 GCP DEPLOYER BALANCED EDITION
+# ✅ BALANCE XRAY
+# ✅ BALANCE NGINX
 # ✅ NO PHONE OVERHEATING
-# ✅ FASTER DOWNLOAD: 8-25MB/s+
+# ✅ SMOOTH STREAMING & FASTER DOWNLOAD: 8-25MB/s+
 # ✅ STABLE | LOW BATTERY USAGE
 # ✅ FIXED CREDS: Pass=kiana-2 | UUID=a1b2c3d4-5678-40ef-98ab-cdef01234567
 # =========================================
