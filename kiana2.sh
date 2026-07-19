@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # =========================================
-# KIANA-2.3 BALANCED EDITION
+# KIANA-2.3 GCP DEPLOYER BALANCED EDITION
 # ✅ NO PHONE OVERHEATING
 # ✅ FASTER DOWNLOAD: 8-25MB/s+
 # ✅ STABLE | LOW BATTERY USAGE
