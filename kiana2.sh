@@ -31,7 +31,7 @@ clear
 echo ""
 echo -e "${CYAN}=========================================${NC}"
 echo -e "${GREEN}     TROJAN + VLESS WS/TLS${NC}"
-echo -e "${GREEN}     BALANCED SPEED & LOW HEAT BATTERY USAGE${NC}"
+echo -e "${GREEN}     BALANCED SPEED & LOW BATTERY USAGE${NC}"
 echo -e "${CYAN}=========================================${NC}"
 echo ""
 echo -e "${GREEN}✅ Region:${NC} $REGION"
