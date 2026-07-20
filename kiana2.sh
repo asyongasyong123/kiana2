@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # =========================================
-# 🚀 KIANA-2.3 GCP DEPLOYER BALANCED EDITION
+# 🚀 KIANA-2.4 GCP DEPLOYER BALANCED EDITION
 # ✅ BALANCE XRAY
 # ✅ BALANCE NGINX
 # ✅ ADDED HEALTH CHECK ENDPOINT
