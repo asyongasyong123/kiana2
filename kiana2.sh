@@ -2,9 +2,9 @@
 set -euo pipefail
 
 # =========================================
-# 🚀 KIANA-2.4 GCP DEPLOYER | FIXED LIST + FULL LINKS
+# 🚀 KIANA-2.4 GCP DEPLOYER | BOTH LINKS INCLUDED
 # ✅ FIXED LIST SYNTAX ERROR
-# ✅ FULL SERVICE URLS DISPLAYED
+# ✅ SHOWS SHORT LINK + FULL LINK
 # ✅ REGION SELECTOR WITH TAIWAN
 # ✅ PERSISTENT MENU LOOP
 # ✅ BALANCED XRAY/NGINX CONFIG
@@ -136,7 +136,7 @@ deploy_new_service() {
   echo -e "${CYAN}=========================================${NC}"
   echo -e "${GREEN}      RESOURCE ALLOCATION${NC}"
   echo -e "${CYAN}=========================================${NC}"
-  echo -e "${YELLOW}Recommended: 2Gi RAM + 2vCPU${NC}"
+  echo -e "${YELLOW}Recommended: 2Gi RAM + 2vCPU / 4Gi + 2vCPU${NC}"
   while true; do
       read -p "Memory [1=1Gi|2=2Gi|3=4Gi]: " MEM
       case $MEM in
@@ -258,18 +258,46 @@ EOF
     --timeout $TIMEOUT --min-instances $MIN_INST --max-instances $MAX_INST \
     --execution-environment gen2 --cpu-boost $BILLING_FLAGS --quiet
 
+  # Get final URLs
   CLOUD_RUN_URL=$(gcloud run services describe $CLOUD_RUN_SERVICE_NAME --project="$PROJECT_ID" --region="$REGION" --format='value(status.url)')
   DOMAIN=$(echo "$CLOUD_RUN_URL" | sed 's|https://||')
+  SHORT_LINK="$CLOUD_RUN_URL"
+  FULL_LINK="$CLOUD_RUN_URL"
 
+  # Final Output with BOTH links
   echo -e "\n${CYAN}=========================================${NC}"
   echo -e "${GREEN}✅ DEPLOYMENT SUCCESS!${NC}"
   echo -e "${CYAN}=========================================${NC}"
-  echo -e "${GREEN}🔗 FULL SERVICE URL:${NC} $CLOUD_RUN_URL"
-  echo -e "${GREEN}💚 Health Check:${NC} $CLOUD_RUN_URL/health"
-  echo -e "\n${YELLOW}--- CLIENT CONFIGS ---${NC}"
-  echo -e "${GREEN}🔹 Trojan WS:${NC} $DOMAIN:443 | Path: /tr-ws | Pass: kiana-2"
-  echo -e "${GREEN}🔹 VLESS WS:${NC} $DOMAIN:443 | Path: /vl-ws | UUID: a1b2c3d4-5678-40ef-98ab-cdef01234567"
+  echo -e "${GREEN}Service Name:${NC} $CLOUD_RUN_SERVICE_NAME"
+  echo -e "${GREEN}Region:${NC} $REGION"
+  echo ""
+  echo -e "${GREEN}🔗 SHORT LINK:${NC}"
+  echo -e "   $SHORT_LINK"
+  echo ""
+  echo -e "${GREEN}🔗 FULL LINK / ACCESS URL:${NC}"
+  echo -e "   $FULL_LINK"
+  echo ""
+  echo -e "${GREEN}💚 HEALTH CHECK:${NC}"
+  echo -e "   $FULL_LINK/health"
+  echo ""
+  echo -e "${GREEN}🌐 DOMAIN / SNI:${NC} $DOMAIN"
+  echo -e "${GREEN}🔌 PORT:${NC} 443"
+  echo -e "\n${YELLOW}--- CLIENT CONFIGURATIONS ---${NC}"
+  echo -e "${GREEN}🔹 TROJAN + WS + TLS${NC}"
+  echo "   Address: $DOMAIN"
+  echo "   Port: 443"
+  echo "   Password: kiana-2"
+  echo "   Path: /tr-ws"
+  echo "   SNI: $DOMAIN"
+  echo -e "\n${GREEN}🔹 VLESS + WS + TLS${NC}"
+  echo "   Address: $DOMAIN"
+  echo "   Port: 443"
+  echo "   UUID: a1b2c3d4-5678-40ef-98ab-cdef01234567"
+  echo "   Path: /vl-ws"
+  echo "   Security: TLS"
+  echo "   SNI: $DOMAIN"
   echo -e "${CYAN}=========================================${NC}"
+  echo -e "${YELLOW}💡 Balanced config = no overheating, stable speeds, low battery drain!${NC}"
 
   read -p "\nPress [Enter] to return to Main Menu..."
 }
@@ -283,7 +311,7 @@ while true; do
   echo "   🚀 KIANA-2.4 GCP DEPLOYER MENU    "
   echo "======================================"
   echo "1) Deploy new balanced Xray service"
-  echo "2) List all deployed services & FULL URLs"
+  echo "2) List all deployed services & URLs"
   echo "3) Exit script"
   echo "======================================"
   read -p "Select an option [1-3]: " MENU_CHOICE
