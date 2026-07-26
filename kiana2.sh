@@ -10,6 +10,7 @@ set -euo pipefail
 # ✅ SMOOTH STREAMING & FASTER DOWNLOAD: 8-25MB/s+
 # ✅ STABLE | LOW BATTERY USAGE
 # ✅ FIXED CREDS: Pass=kiana-2 | UUID=a1b2c3d4-5678-40ef-98ab-cdef01234567
+# ✅ ADDED SHORT LINK FOR EASY COPY
 # =========================================
 
 GREEN='\033[1;32m'
@@ -318,6 +319,8 @@ echo -e "\n${CYAN}=========================================${NC}"
 echo -e "${GREEN}✅ DEPLOYMENT SUCCESS! BALANCED PERFORMANCE${NC}"
 echo -e "${CYAN}=========================================${NC}"
 echo -e "${GREEN}Service:${NC} $CLOUD_RUN_SERVICE_NAME"
+echo -e "${GREEN}🔗 SHORT LINK:${NC}"
+echo -e "https://$DOMAIN"
 echo -e "${GREEN}🔗 FULL LINK:${NC}"
 echo -e "https://$DOMAIN"
 echo -e "${GREEN}💚 HEALTH CHECK:${NC}"
