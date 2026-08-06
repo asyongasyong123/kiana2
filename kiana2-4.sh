@@ -16,9 +16,6 @@ YELLOW='\033[1;33m'
 CYAN='\033[1;36m'
 NC='\033[0m'
 
-# ==============================================
-# ✅ FIXED: List All Deployed Services
-# ==============================================
 list_deployed_services() {
   echo -e "\n======================================"
   echo -e "${CYAN}📋 ALL DEPLOYED KIANA 2.4-XRAY SERVICES${NC}"
@@ -39,9 +36,6 @@ list_deployed_services() {
   read -p "Press [Enter] to return to Main Menu..."
 }
 
-# ==============================================
-# Region Selection Menu
-# ==============================================
 select_region() {
   echo -e "\n=== GCP Cloud Run Region Selection ==="
   echo "--- North America ---"
@@ -85,9 +79,6 @@ select_region() {
   echo -e "${GREEN}✅ Selected Region:${NC} $REGION"
 }
 
-# ==============================================
-# Full Deployment Process
-# ==============================================
 deploy_new_service() {
   select_region
 
@@ -102,7 +93,7 @@ deploy_new_service() {
   clear
   echo ""
   echo -e "${CYAN}==========================================================${NC}"
-  echo -e "${GREEN}      KIANA 2.4 GCP CLOUDSHELL DEPLOYER BY Con Fig${NC}"
+  echo -e "${GREEN}     KIANA 2.4 GCP CLOUDSHELL DEPLOYER BY Con Fig${NC}"
   echo -e "${YELLOW}     TROJAN & VLESS WS + TLS | 2 PROTOCOLS ONLY${NC}"
   echo -e "${RED}     MANUAL SET REGION,INSTANCES,BILLING,MEMORY & vCPU${NC}"
   echo -e "${GREEN}     BALANCED XRAY.JSON AND NGINX.CONF${NC}"
@@ -180,11 +171,6 @@ deploy_new_service() {
 
   cd "$BUILD_DIR" || exit 1
 
-  
-# =========================
-# ✅ BALANCED XRAY CONFIG
-# Not too heavy, not too slow — NO PHONE HEATING
-# =========================
 cat > config.json <<'EOF'
 {
   "log": { "loglevel": "warning" },
@@ -254,10 +240,6 @@ cat > config.json <<'EOF'
 }
 EOF
 
-# =========================
-# ✅ BALANCED NGINX
-# No heavy buffering, light & fast
-# =========================
 cat > nginx.conf <<'EOF'
 worker_processes auto;
 worker_rlimit_nofile 65535;
@@ -375,13 +357,11 @@ EOF
     --timeout $TIMEOUT --min-instances $MIN_INST --max-instances $MAX_INST \
     --execution-environment gen2 --cpu-boost $BILLING_FLAGS --quiet
 
-  # Get final URLs
   CLOUD_RUN_URL=$(gcloud run services describe $CLOUD_RUN_SERVICE_NAME --project="$PROJECT_ID" --region="$REGION" --format='value(status.url)')
   DOMAIN=$(echo "$CLOUD_RUN_URL" | sed 's|https://||')
   SHORT_LINK="$CLOUD_RUN_URL"
   FULL_LINK="$CLOUD_RUN_URL"
-
-  # Final Output with BOTH links
+  
   echo -e "\n${CYAN}=========================================${NC}"
   echo -e "${GREEN}✅ DEPLOYMENT SUCCESS!${NC}"
   echo -e "${CYAN}=========================================${NC}"
@@ -421,9 +401,6 @@ EOF
   read -p "\nPress [Enter] to return to Main Menu..."
 }
 
-# ==============================================
-# Main Menu Loop
-# ==============================================
 while true; do
   clear
   echo "======================================"
