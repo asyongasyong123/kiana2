@@ -358,29 +358,21 @@ EOF
     --execution-environment gen2 --cpu-boost $BILLING_FLAGS --quiet
 
   CLOUD_RUN_URL=$(gcloud run services describe $CLOUD_RUN_SERVICE_NAME --project="$PROJECT_ID" --region="$REGION" --format='value(status.url)')
-  DOMAIN=$(echo "$CLOUD_RUN_URL" | sed 's|https://||')
   SHORT_LINK="$CLOUD_RUN_URL"
   FULL_LINK="$CLOUD_RUN_URL"
   
-  echo -e "\n${CYAN}=========================================${NC}"
-  echo -e "${GREEN}✅ DEPLOYMENT SUCCESS!${NC}"
-  echo -e "${CYAN}=========================================${NC}"
+  clear
+  echo -e "\n${GREEN}=========================================${NC}"
+  echo -e "${YELLOW}✅ DEPLOYMENT SUCCESS!${NC}"
+  echo -e "${RED}=========================================${NC}"
   echo -e "${GREEN}Service Name:${NC} $CLOUD_RUN_SERVICE_NAME"
-  echo -e "${GREEN}Region:${NC} $REGION"
+  echo -e "${YELLOW}Region:${NC} $REGION"
+  echo -e "${RED}🔗 SHORT LINK:${NC}" $SHORT_LINK"
+  echo -e "${GREEN}💚 HEALTH CHECK:${NC}" $FULL_LINK/health"
   echo ""
-  echo -e "${GREEN}🔗 SHORT LINK:${NC}"
-  echo -e "   $SHORT_LINK"
-  echo ""
-  echo -e "${GREEN}🔗 FULL LINK:${NC}"
-  echo -e "   $FULL_LINK"
-  echo ""
-  echo -e "${GREEN}💚 HEALTH CHECK:${NC}"
-  echo -e "   $FULL_LINK/health"
-  echo ""
-  echo -e "${GREEN}🌐 DOMAIN:${NC} https://$DOMAIN"
-  echo -e "${GREEN}🔌 PORT:${NC} 443"
-  echo -e "\n${CYAN}===== NETMOD CONFIGURATIONS =====${NC}"
-  echo -e "${GREEN}🔹 TROJAN + WS + TLS${NC}"
+  DOMAIN=$(echo "$FULL_LINK" | sed 's|https://||')
+  echo -e "\n${YELLOW}===== NETMOD CONFIGURATIONS =====${NC}"
+  echo -e "${RED}🔹 TROJAN + WS + TLS${NC}"
   echo "   Address: firebase-settings.crashlytics.com"
   echo "   Port: 443"
   echo "   Password: kiana-2"
@@ -395,8 +387,8 @@ EOF
   echo "   Path: /vl-ws"
   echo "   Security: TLS"
   echo "   SNI: firebaseremoteconfigrealtime.googleapis.com"
-  echo -e "${CYAN}=========================================${NC}"
-  echo -e "${YELLOW}💡 Balanced config = no overheating, stable speeds, low battery drain!${NC}"
+  echo -e "${YELLOW}=========================================${NC}"
+  echo -e "${RED}💡 Balanced config = no overheating, stable speeds, low battery drain!${NC}"
 
   read -p "\nPress [Enter] to return to Main Menu..."
 }
