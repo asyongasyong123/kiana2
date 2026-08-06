@@ -377,7 +377,7 @@ EOF
   echo -e "${GREEN}💚 HEALTH CHECK:${NC}"
   echo -e "   $FULL_LINK/health"
   echo ""
-  echo -e "${GREEN}🌐 DOMAIN:${NC} $DOMAIN"
+  echo -e "${GREEN}🌐 DOMAIN:${NC} https://$DOMAIN"
   echo -e "${GREEN}🔌 PORT:${NC} 443"
   echo -e "\n${CYAN}===== NETMOD CONFIGURATIONS =====${NC}"
   echo -e "${GREEN}🔹 TROJAN + WS + TLS${NC}"
