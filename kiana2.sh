@@ -179,49 +179,161 @@ deploy_new_service() {
 
   cd "$BUILD_DIR" || exit 1
 
-  # Xray Config
-  cat > config.json <<'EOF'
+  
+# =========================
+# ✅ BALANCED XRAY CONFIG
+# Not too heavy, not too slow — NO PHONE HEATING
+# =========================
+cat > config.json <<'EOF'
 {
   "log": { "loglevel": "warning" },
   "policy": {
     "levels": {
-      "0": { "handshake": 2, "connIdle": 86400, "bufferSize": 2097152 }
+      "0": {
+        "handshake": 2,
+        "connIdle": 86400,
+        "uplinkOnly": 0,
+        "downlinkOnly": 0,
+        "bufferSize": 2097152
+      }
     }
   },
   "inbounds": [
     {
-      "tag": "trojan-ws", "port": 10001, "listen": "127.0.0.1", "protocol": "trojan",
+      "tag": "trojan-ws",
+      "port": 10001,
+      "listen": "127.0.0.1",
+      "protocol": "trojan",
       "settings": { "clients": [{"password": "kiana-2", "level": 0}] },
       "sniffing": { "enabled": true, "destOverride": ["http","tls","quic"], "routeOnly": true },
-      "streamSettings": { "network": "ws", "wsSettings": { "path": "/tr-ws?ed=2560" }, "sockopt": { "tcpNoDelay": true, "tcpFastOpen": true } }
+      "streamSettings": {
+        "network": "ws",
+        "wsSettings": { "path": "/tr-ws?ed=2560", "maxEarlyData": 1048576 },
+        "sockopt": {
+          "tcpNoDelay": true,
+          "tcpFastOpen": true,
+          "tcpKeepAlive": true,
+          "tcpKeepAliveIdle": 15,
+          "tcpKeepAliveInterval": 10,
+          "tcpKeepAliveCount": 5
+        }
+      }
     },
     {
-      "tag": "vless-ws", "port": 10002, "listen": "127.0.0.1", "protocol": "vless",
+      "tag": "vless-ws",
+      "port": 10002,
+      "listen": "127.0.0.1",
+      "protocol": "vless",
       "settings": { "clients": [{"id": "a1b2c3d4-5678-40ef-98ab-cdef01234567", "level": 0}], "decryption": "none" },
       "sniffing": { "enabled": true, "destOverride": ["http","tls","quic"], "routeOnly": true },
-      "streamSettings": { "network": "ws", "wsSettings": { "path": "/vl-ws?ed=2560" }, "sockopt": { "tcpNoDelay": true, "tcpFastOpen": true } }
+      "streamSettings": {
+        "network": "ws",
+        "wsSettings": { "path": "/vl-ws?ed=2560", "maxEarlyData": 1048576 },
+        "sockopt": {
+          "tcpNoDelay": true,
+          "tcpFastOpen": true,
+          "tcpKeepAlive": true,
+          "tcpKeepAliveIdle": 15,
+          "tcpKeepAliveInterval": 10,
+          "tcpKeepAliveCount": 5
+        }
+      }
     }
   ],
-  "outbounds": [{"protocol": "freedom", "settings": { "domainStrategy": "UseIPv4v6" }}]
+  "outbounds": [
+    {
+      "protocol": "freedom",
+      "settings": {
+        "domainStrategy": "UseIPv4v6",
+        "tcpKeepAliveIdle": 15,
+        "tcpKeepAliveInterval": 10
+      }
+    }
+  ]
 }
 EOF
 
-  # Nginx Config
-  cat > nginx.conf <<'EOF'
-worker_processes auto; worker_rlimit_nofile 65535; worker_priority -10;
-events { worker_connections 4096; use epoll; multi_accept on; accept_mutex off; }
+# =========================
+# ✅ BALANCED NGINX
+# No heavy buffering, light & fast
+# =========================
+cat > nginx.conf <<'EOF'
+worker_processes auto;
+worker_rlimit_nofile 65535;
+worker_priority -10;
+
+events {
+    worker_connections 4096;
+    use epoll;
+    multi_accept on;
+    accept_mutex off;
+}
+
 http {
-  include mime.types; default_type application/octet-stream;
-  sendfile on; tcp_nodelay on; tcp_nopush on; keepalive_timeout 86400;
-  client_max_body_size 0; proxy_buffering off; proxy_http_version 1.1;
-  map $http_upgrade $connection_upgrade { default upgrade; '' close; }
-  server {
-    listen 8080; server_name _;
-    location /health { return 200 "OK\n"; add_header Content-Type text/plain; }
-    location / { proxy_pass https://www.google.com; proxy_set_header Host www.google.com; }
-    location /tr-ws { proxy_pass http://127.0.0.1:10001; proxy_set_header Upgrade $http_upgrade; proxy_set_header Connection $connection_upgrade; }
-    location /vl-ws { proxy_pass http://127.0.0.1:10002; proxy_set_header Upgrade $http_upgrade; proxy_set_header Connection $connection_upgrade; }
-  }
+    include mime.types;
+    default_type application/octet-stream;
+
+    sendfile on;
+    tcp_nodelay on;
+    tcp_nopush on;
+    types_hash_max_size 2048;
+
+    keepalive_timeout 86400;
+    keepalive_requests 100000;
+
+    client_max_body_size 0;
+    client_body_buffer_size 128k;
+
+    proxy_buffering off;
+    proxy_request_buffering off;
+    proxy_cache off;
+    proxy_http_version 1.1;
+    proxy_set_header Connection "";
+
+    proxy_connect_timeout 10s;
+    proxy_send_timeout 86400s;
+    proxy_read_timeout 86400s;
+
+    server_tokens off;
+
+    map $http_upgrade $connection_upgrade {
+        default upgrade;
+        '' close;
+    }
+
+    server {
+        listen 8080 deferred reuseport;
+        server_name _;
+
+        location / {
+            proxy_pass https://www.google.com;
+            proxy_set_header Host www.google.com;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_ssl_server_name on;
+            proxy_ssl_protocols TLSv1.2 TLSv1.3;
+        }
+
+        location /tr-ws {
+            proxy_pass http://127.0.0.1:10001;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $connection_upgrade;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_buffering off;
+        }
+
+        location /vl-ws {
+            proxy_pass http://127.0.0.1:10002;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $connection_upgrade;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_buffering off;
+        }
+    }
 }
 EOF
 
