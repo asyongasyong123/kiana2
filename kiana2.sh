@@ -140,7 +140,7 @@ deploy_new_service() {
   echo -e "${CYAN}=========================================${NC}"
   echo -e "${GREEN}      RESOURCE ALLOCATION${NC}"
   echo -e "${CYAN}=========================================${NC}"
-  echo -e "${YELLOW}Recommended: 2Gi RAM + 2vCPU / 4Gi + 2vCPU${NC}"
+  echo -e "${YELLOW}Basic: 1Gi RAM + 1vCPU / Balance: 2Gi RAM + 2vCPU / Max: 4Gi + 4vCPU${NC}"
   while true; do
       read -p "Memory [1=1Gi|2=2Gi|3=4Gi]: " MEM
       case $MEM in
