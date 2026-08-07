@@ -134,7 +134,7 @@ deploy_new_service() {
   echo -e "${CYAN}=========================================${NC}"
   echo -e "${YELLOW}Basic: 1Gi RAM + 1vCPU / Balance: 2Gi RAM + 2vCPU / Max: 4Gi + 4vCPU${NC}"
   while true; do
-      read -p "Memory [1=1Gi|2=2Gi|3=4Gi]: " MEM
+      read -p "Memory [ 1 = 1Gi | 2 = 2Gi | 3 = 4Gi ]: " MEM
       case $MEM in
           1) MEMORY="1Gi"; break ;;
           2) MEMORY="2Gi"; break ;;
@@ -142,7 +142,7 @@ deploy_new_service() {
       esac
   done
   while true; do
-      read -p "vCPU [1=1|2=2|3=4]: " CPU_SEL
+      read -p "vCPU [ 1 = 1 | 2 = 2 | 3 = 4 ]: " CPU_SEL
       case $CPU_SEL in
           1) CPU="1"; break ;;
           2) CPU="2"; break ;;
