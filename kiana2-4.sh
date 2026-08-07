@@ -363,10 +363,11 @@ EOF
   FULL_LINK="$CLOUD_RUN_URL"
   
   echo -e "\n${GREEN}=========================================${NC}"
-  echo -e "${YELLOW}✅ DEPLOYMENT SUCCESS! ✅${NC}"
+  echo -e "${YELLOW}✅ DEPLOYMENT SUCCESS!✅${NC}"
   echo -e "${RED}=========================================${NC}"
   echo ""
-  echo -e "${GREEN}Service Name:${NC} $CLOUD_RUN_SERVICE_NAME"
+  echo -e "${GREEN}Service Name:${NC}"
+  echo -e " $CLOUD_RUN_SERVICE_NAME"
   echo ""
   echo -e "${YELLOW}Region:${NC}"
   echo -e " $REGION"
