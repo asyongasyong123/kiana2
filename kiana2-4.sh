@@ -365,7 +365,7 @@ EOF
   echo -e "\n${GREEN}=========================================${NC}"
   echo -e "${YELLOW}✅ DEPLOYMENT SUCCESS! ✅${NC}"
   echo -e "${RED}=========================================${NC}"
-  exho ""
+  echo ""
   echo -e "${GREEN}Service Name:${NC} $CLOUD_RUN_SERVICE_NAME"
   echo ""
   echo -e "${YELLOW}Region:${NC}"
