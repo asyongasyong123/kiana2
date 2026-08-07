@@ -365,12 +365,12 @@ EOF
   
   clear
   echo -e "\n${GREEN}=========================================${NC}"
-  echo -e "${YELLOW}✅ DEPLOYMENT SUCCESS!${NC}"
+  echo -e "${YELLOW}✅ DEPLOYMENT SUCCESS! ✅${NC}"
   echo -e "${RED}=========================================${NC}"
   echo -e "${GREEN}Service Name:${NC} $CLOUD_RUN_SERVICE_NAME"
   echo -e "${YELLOW}Region:${NC} $REGION"
-  echo -e "${RED}🔗 SHORT LINK:${NC}" $SHORT_LINK"
-  echo -e "${GREEN}💚 HEALTH CHECK:${NC}" $FULL_LINK/health"
+  echo -e "${RED}🔗 SHORT LINK:${NC} $SHORT_LINK"
+  echo -e "${GREEN}💚 HEALTH CHECK:${NC} $FULL_LINK/health"
   echo ""
   echo -e "\n${YELLOW}===== NETMOD CONFIGURATIONS =====${NC}"
   echo -e "${RED}🔹 TROJAN + WS + TLS${NC}"
@@ -397,7 +397,7 @@ EOF
 while true; do
   clear
   echo "======================================"
-  echo "   🚀 KIANA-2.4 GCP DEPLOYER MENU    "
+  echo "   🚀 KIANA-2.4 GCP DEPLOYER MENU 🚀   "
   echo "======================================"
   echo "1) Deploy new balanced Xray service"
   echo "2) List all deployed services & URLs"
