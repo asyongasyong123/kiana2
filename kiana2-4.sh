@@ -358,33 +358,38 @@ EOF
     --execution-environment gen2 --cpu-boost $BILLING_FLAGS --quiet
 
   CLOUD_RUN_URL=$(gcloud run services describe $CLOUD_RUN_SERVICE_NAME --project="$PROJECT_ID" --region="$REGION" --format='value(status.url)')
-  DOMAIN=$(echo "FULL_LINK" | sed 's|https://||')
-  DOMAIN=$(echo "SHORT_LINK" | sed 's|https://||')
+  DOMAIN=$(echo "$CLOUD_RUN_URL" | sed 's|https://||')
   SHORT_LINK="$CLOUD_RUN_URL"
   FULL_LINK="$CLOUD_RUN_URL"
   
-  clear
   echo -e "\n${GREEN}=========================================${NC}"
   echo -e "${YELLOW}✅ DEPLOYMENT SUCCESS! ✅${NC}"
   echo -e "${RED}=========================================${NC}"
+  exho ""
   echo -e "${GREEN}Service Name:${NC} $CLOUD_RUN_SERVICE_NAME"
-  echo -e "${YELLOW}Region:${NC} $REGION"
-  echo -e "${RED}🔗 SHORT LINK:${NC} $SHORT_LINK"
-  echo -e "${GREEN}💚 HEALTH CHECK:${NC} $FULL_LINK/health"
+  echo ""
+  echo -e "${YELLOW}Region:${NC}"
+  echo -e " $REGION"
+  echo ""
+  echo -e "${RED}🔗 SHORT LINK:${NC}"
+  echo -e " $SHORT_LINK"
+  echo ""
+  echo -e "${GREEN}💚 HEALTH CHECK:${NC}"
+  echo -e " $FULL_LINK/health"
   echo ""
   echo -e "\n${YELLOW}===== NETMOD CONFIGURATIONS =====${NC}"
   echo -e "${RED}🔹 TROJAN + WS + TLS${NC}"
   echo "   Address: firebase-settings.crashlytics.com"
   echo "   Port: 443"
   echo "   Password: kiana-2"
-  echo "   Host: $DOMAIN"
+  echo "   Host: $FULL_LINK"
   echo "   Path: /tr-ws"
   echo "   SNI: firebase-settings.crashlytics.com"
   echo -e "\n${GREEN}🔹 VLESS + WS + TLS${NC}"
   echo "   Address: firebaseremoteconfigrealtime.googleapis.com"
   echo "   Port: 443"
   echo "   UUID: a1b2c3d4-5678-40ef-98ab-cdef01234567"
-  echo "   Host: $DOMAIN"
+  echo "   Host: $SHORT_LINK"
   echo "   Path: /vl-ws"
   echo "   Security: TLS"
   echo "   SNI: firebaseremoteconfigrealtime.googleapis.com"
@@ -397,7 +402,7 @@ EOF
 while true; do
   clear
   echo "======================================"
-  echo "   🚀 KIANA-2.4 GCP DEPLOYER MENU 🚀   "
+  echo "   🚀 KIANA-2.4 GCP DEPLOYER MENU🚀   "
   echo "======================================"
   echo "1) Deploy new balanced Xray service"
   echo "2) List all deployed services & URLs"
