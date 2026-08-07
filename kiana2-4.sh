@@ -358,6 +358,8 @@ EOF
     --execution-environment gen2 --cpu-boost $BILLING_FLAGS --quiet
 
   CLOUD_RUN_URL=$(gcloud run services describe $CLOUD_RUN_SERVICE_NAME --project="$PROJECT_ID" --region="$REGION" --format='value(status.url)')
+  DOMAIN=$(echo "FULL_LINK" | sed 's|https://||')
+  DOMAIN=$(echo "SHORT_LINK" | sed 's|https://||')
   SHORT_LINK="$CLOUD_RUN_URL"
   FULL_LINK="$CLOUD_RUN_URL"
   
@@ -370,7 +372,6 @@ EOF
   echo -e "${RED}🔗 SHORT LINK:${NC}" $SHORT_LINK"
   echo -e "${GREEN}💚 HEALTH CHECK:${NC}" $FULL_LINK/health"
   echo ""
-  DOMAIN=$(echo "$FULL_LINK" | sed 's|https://||')
   echo -e "\n${YELLOW}===== NETMOD CONFIGURATIONS =====${NC}"
   echo -e "${RED}🔹 TROJAN + WS + TLS${NC}"
   echo "   Address: firebase-settings.crashlytics.com"
