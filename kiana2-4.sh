@@ -125,7 +125,7 @@ deploy_new_service() {
       case $BILLING_CHOICE in
           1) BILLING_MODE="request"; break ;;
           2) BILLING_MODE="instance"; break ;;
-          *) echo -e "${RED}Invalid input!${NC}" ;;
+          *) echo -e "${RED}Invalid input!Enter only 1 or 2${NC}" ;;
       esac
   done
 
@@ -139,14 +139,16 @@ deploy_new_service() {
           1) MEMORY="1Gi"; break ;;
           2) MEMORY="2Gi"; break ;;
           3) MEMORY="4Gi"; break ;;
+          *) echo -e "${RED} Invalid input!Enter only 1,2 or 3${NC}" ;;
       esac
   done
   while true; do
-      read -p "vCPU [ 1 = 1 | 2 = 2 | 3 = 4 ]: " CPU_SEL
+      read -p "vCPU [ 1 = 1vCPU | 2 = 2vCPU | 3 = 4vCPU ]: " CPU_SEL
       case $CPU_SEL in
           1) CPU="1"; break ;;
           2) CPU="2"; break ;;
           3) CPU="4"; break ;;
+          *) echo -e "${RED} Invalid input!Enter only 1,2 or 3 ${NC}" ;;
       esac
   done
 
